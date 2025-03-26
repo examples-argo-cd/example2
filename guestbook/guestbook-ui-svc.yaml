@@ -2,9 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: guestbook-ui
+  annotations:
+    description: "Guestbook UI service for example application"
 spec:
+  type: ClusterIP
   ports:
   - port: 80
     targetPort: 80
+    name: http
   selector:
     app: guestbook-ui
