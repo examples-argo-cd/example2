@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook-ui-{{.environment}}
+  labels:
+    app: guestbook-ui
+    environment: {{.environment}}
+    version: {{.version}}
+spec:
+  replicas: {{.replicas}}
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: guestbook-ui
+      environment: {{.environment}}
+  template:
+    metadata:
+      labels:
+        app: guestbook-ui
+        environment: {{.environment}}
+        version: {{.version}}
+    spec:
+      containers:
+      - image: gcr.io/heptio-images/ks-guestbook-demo:{{.version}}
+        name: guestbook-ui
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
