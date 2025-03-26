@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: guestbook-matrix
+spec:
+  generators:
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - environment: dev
+                  namespace: guestbook-dev
+                - environment: staging
+                  namespace: guestbook-staging
+                - environment: prod
+                  namespace: guestbook-prod
+          - list:
+              elements:
+                - version: "0.3"
+                  replicas: 1
+                - version: "0.4"
+                  replicas: 2
+  template:
+    metadata:
+      name: 'guestbook-{{.environment}}-{{.version}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/examples-argo-cd/example2.git
+        targetRevision: HEAD
+        path: guestbook
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{.namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+      # Template for the guestbook application
+      # This will generate deployments for each combination of environment and version
+      # For example: guestbook-dev-0.3, guestbook-staging-0.4, etc.

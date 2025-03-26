@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook-ui-{{.environment}}
+  annotations:
+    description: "Guestbook UI service for {{.environment}} environment"
+  labels:
+    app: guestbook-ui
+    environment: {{.environment}}
+    version: {{.version}}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http
+  selector:
+    app: guestbook-ui
+    environment: {{.environment}}
