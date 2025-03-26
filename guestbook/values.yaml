@@ -1,0 +1,35 @@
+# Default values for guestbook application
+# This file supports the Helm parameters used in the ApplicationSet
+
+# Number of replicas for the guestbook-ui deployment
+replicaCount: 1
+
+# Image configuration
+image:
+  repository: gcr.io/heptio-images/ks-guestbook-demo
+  tag: 0.3
+  pullPolicy: IfNotPresent
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+# Environment-specific configurations can be overridden by the ApplicationSet
+environments:
+  dev:
+    replicaCount: 1
+  staging:
+    replicaCount: 2
+  prod:
+    replicaCount: 3

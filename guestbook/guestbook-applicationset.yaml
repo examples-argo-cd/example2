@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: guestbook-matrix
+spec:
+  generators:
+    # Matrix generator combines the parameters from two or more generators
+    - matrix:
+        generators:
+          # First generator: List of environments
+          - list:
+              elements:
+                - env: dev
+                  replicas: "1"
+                - env: staging
+                  replicas: "2"
+                - env: prod
+                  replicas: "3"
+          # Second generator: List of clusters
+          - list:
+              elements:
+                - cluster: in-cluster
+                  url: https://kubernetes.default.svc
+                - cluster: external-cluster
+                  url: https://external-cluster-api.example.com
+  template:
+    metadata:
+      name: 'guestbook-{{env}}-{{cluster}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/examples-argo-cd/example2.git
+        targetRevision: HEAD
+        path: guestbook
+        helm:
+          parameters:
+            - name: replicaCount
+              value: '{{replicas}}'
+      destination:
+        server: '{{url}}'
+        namespace: 'guestbook-{{env}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
