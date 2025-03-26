@@ -2,7 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: guestbook-ui
+  labels:
+    app.kubernetes.io/name: guestbook-ui
+    app.kubernetes.io/part-of: guestbook
 spec:
+  # Default replica count, can be overridden by ApplicationSet
   replicas: 1
   revisionHistoryLimit: 3
   selector:
@@ -14,7 +18,14 @@ spec:
         app: guestbook-ui
     spec:
       containers:
-      - image: gcr.io/heptio-images/ks-guestbook-demo:0.2
+      - image: gcr.io/heptio-images/ks-guestbook-demo:0.3
         name: guestbook-ui
         ports:
         - containerPort: 80
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
